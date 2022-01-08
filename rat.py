@@ -1,12 +1,16 @@
 #!/usr/bin/python3
-
+# Imports already in python/installed via pip
 import requests
 import geopy.distance
 import time
 from twilio.rest import Client
+# Imports of files in project
+from secrets import Secrets
 
-ACCOUNT_SID = ''
-AUTH_TOKEN = ''
+
+SECRETS = Secrets()
+ACCOUNT_SID = SECRETS.account_sid
+AUTH_TOKEN = SECRETS.auth_token
 CLIENT = Client(ACCOUNT_SID, AUTH_TOKEN)
 
 HOME_COORDS = (, )
@@ -36,7 +40,7 @@ def send_text(sorted_distance):
         message = "\nAvailable RAT tests! Here's a list:\n"
         for distance, place in new:
             message += pretty_print(distance, place)
-        notification = CLIENT.notify.services('').notifications.create(
+        notification = CLIENT.notify.services(SECRETS.text_service_id).notifications.create(
         to_binding='{"binding_type":"sms", "address":"+61123123123"}',
         body=message)
 
