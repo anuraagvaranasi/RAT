@@ -18,7 +18,7 @@ USER = users.init_users()[0]
 HOME_COORDS = (USER.lat, USER.lng)
 WITHIN_RANGE = USER.range
 
-PLACES_ALREADY_SENT = set()
+PLACES_ALREADY_SENT = {}
 
 def main(): 
     places = get_json()
@@ -32,8 +32,8 @@ def main():
     send_text(sorted_distance)
 
 def send_text(sorted_distance):
-    within_range = places_within_range(sorted_distance)
-    new = new_places(within_range)
+    within_range = places_within_range(sorted_distance, USER)
+    new = new_places(within_range, USER)
 
     if len(new) == 0:
         print("Sending nothing")
@@ -46,21 +46,23 @@ def send_text(sorted_distance):
         to_binding='{"binding_type":"sms", "address": "' + USER.phone_number + '"}',
         body=message)
 
-def new_places(within_range):
+def new_places(within_range, user):
     new = []
     for distance, place in within_range:
         addr = place.get('address')
-        if addr not in PLACES_ALREADY_SENT:
+        if addr not in PLACES_ALREADY_SENT.get(user.phone_number, []):
             new.append((distance, place))
-            PLACES_ALREADY_SENT.add(addr)
+            if not PLACES_ALREADY_SENT.get(user.phone_number):
+                PLACES_ALREADY_SENT[user.phone_number] = set()
+            PLACES_ALREADY_SENT[user.phone_number].add(addr)
 
     return new
 
 
-def places_within_range(sorted_distance):
+def places_within_range(sorted_distance, user):
     within_range = []
     for distance, place in sorted_distance:
-        if distance <= WITHIN_RANGE:
+        if distance <= user.range:
             within_range.append((distance, place))
     return within_range
 

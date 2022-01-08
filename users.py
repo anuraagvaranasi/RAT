@@ -1,11 +1,11 @@
 import json
 
 class User:
-    def __init__(self, phone_number, lat, lng, range):
+    def __init__(self, phone_number, lat, lng, rng):
         self.phone_number = phone_number
         self.lat = lat
         self.lng = lng
-        self.range = range
+        self.range = rng
 
     def __users_file__init__(self):
         with open('secrets.json') as secrets_file:
