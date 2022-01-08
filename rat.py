@@ -6,6 +6,7 @@ import time
 from twilio.rest import Client
 # Imports of files in project
 from secrets import Secrets
+import users
 
 
 SECRETS = Secrets()
@@ -13,8 +14,9 @@ ACCOUNT_SID = SECRETS.account_sid
 AUTH_TOKEN = SECRETS.auth_token
 CLIENT = Client(ACCOUNT_SID, AUTH_TOKEN)
 
-HOME_COORDS = (, )
-WITHIN_RANGE = 15
+USER = users.init_users()[0]
+HOME_COORDS = (USER.lat, USER.lng)
+WITHIN_RANGE = USER.range
 
 PLACES_ALREADY_SENT = set()
 
@@ -41,7 +43,7 @@ def send_text(sorted_distance):
         for distance, place in new:
             message += pretty_print(distance, place)
         notification = CLIENT.notify.services(SECRETS.text_service_id).notifications.create(
-        to_binding='{"binding_type":"sms", "address":"+61123123123"}',
+        to_binding='{"binding_type":"sms", "address": "' + USER.phone_number + '"}',
         body=message)
 
 def new_places(within_range):
