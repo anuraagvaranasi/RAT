@@ -21,15 +21,19 @@ WITHIN_RANGE = USER.range
 PLACES_ALREADY_SENT = {}
 
 def main(): 
-    places = get_json()
-    sorted_distance = get_sorted_distances(places)
-    
-    for x in range(5):
-        distance, place = sorted_distance[x]
-        pretty_print(distance, place)
-    print()
+    try:
+        places = get_json()
+        sorted_distance = get_sorted_distances(places)
+        
+        for x in range(5):
+            distance, place = sorted_distance[x]
+            pretty_print(distance, place)
+        print()
 
-    send_text(sorted_distance)
+        send_text(sorted_distance)
+    except Exception as err:
+        print(err)
+        print("Something went wrong. Swalloing issue, will retry in 5 seconds")
 
 def send_text(sorted_distance):
     within_range = places_within_range(sorted_distance, USER)
